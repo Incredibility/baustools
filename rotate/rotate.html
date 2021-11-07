@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<title>rotate</title>
+		<style>
+			.noselect {
+			  -webkit-touch-callout: none; /* iOS Safari */
+				-webkit-user-select: none; /* Safari */
+				 -khtml-user-select: none; /* Konqueror HTML */
+				   -moz-user-select: none; /* Firefox */
+					-ms-user-select: none; /* Internet Explorer/Edge */
+						user-select: none; /* Non-prefixed version, currently
+											  supported by Chrome and Opera */
+			}
+		</style>
+	</head>
+	<body>
+		<img class="noselect" id="img360" style="display: block; height: 75%; margin: auto; margin-top: 100px;" draggable=false src="images/1.jpg"></img>
+		<script>
+			const NUM_FRAMES = 18;
+			const DRAG_SPEED = 2 * NUM_FRAMES / window.screen.width;
+
+			let frame = 2;
+			let isSpinning = true;
+			let img360 = document.getElementById("img360");
+			
+			function mod(n, m) {
+				return ((n % m) + m) % m;
+			}
+			
+			function img360update() {
+				img360.src = "images/" + frame + ".jpg";
+			}
+			
+			function spin() {
+				if (!isSpinning) return;
+				img360update();
+				frame = (frame == NUM_FRAMES) ? 1 : frame + 1;
+			}
+			
+			let spinTimer = setInterval(spin, 250);
+			
+			img360.onmousedown = function(event) {
+				let mouseDownX = event.clientX;
+				let frameOffset = frame - 1;
+			
+				function onMouseMove(event) {
+					frame = (mod(Math.floor(DRAG_SPEED * (mouseDownX - event.clientX)) + frameOffset, NUM_FRAMES) + 1);
+					img360update();
+				}
+				
+				function onMouseUp() {
+					document.removeEventListener("mousemove", onMouseMove);
+					document.removeEventListener("mouseup", onMouseUp);
+				}
+			
+				isSpinning = false;
+				clearInterval(spinTimer);
+				document.addEventListener("mousemove", onMouseMove);
+				document.addEventListener("mouseup", onMouseUp);
+			}
+		</script>
+	</body>
+</html>
